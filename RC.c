@@ -8,7 +8,9 @@
 static const char *NAME = "Cryo";
 static const char *VERSION = "1.0";
 
-static int KEY_MAX_LENGTH = 256;
+
+
+static int RC_KEY_MAX_LENGTH = 256;
 uint8_t c, keyLength, k;
 
 
@@ -21,6 +23,8 @@ void printhelp();
 int main(int argc, char const *argv[])
 {
 	//parse arguments
+	//TODO maybe make something else than strcmp? possible buffer overflow?
+	//Suggestion might be to use c++ string variable. 
 	if (argc < 2) // no arguments were passed
 	{
 		printf("%s-%s: fatal error: no input files\n", NAME, VERSION);
