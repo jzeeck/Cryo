@@ -1,5 +1,8 @@
 #include <string.h> //strcmp
 
+static const char *NAME = "Cryo";
+static const char *VERSION = "1.0";
+
 int main(int argc, char const *argv[])
 {
 	//parse arguments
@@ -17,10 +20,12 @@ int main(int argc, char const *argv[])
 			if (strcmp("--help", argv[i]) == 0)
 			{
 				printhelp();
+				exit(0);
 			}
 			if (strcmp("-h", argv[i]) == 0)
 			{
 				printhelp();
+				exit(0);
 			}
 			if (strcmp("--version", argv[i]) == 0)
 			{
