@@ -1,7 +1,13 @@
-#include <string.h> //strcmp
+#include "rc.h"
+#include "cryo.h"
 
 static const char *NAME = "Cryo";
 static const char *VERSION = "1.0";
+
+char * keyFile = "key";
+FILE* fpPlaintext;
+
+
 
 int main(int argc, char const *argv[])
 {
@@ -50,7 +56,7 @@ int main(int argc, char const *argv[])
 
 
 
-	return 0;
+	return rc4(true, keyFile);
 }
 
 

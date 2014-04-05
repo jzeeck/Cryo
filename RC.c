@@ -1,21 +1,16 @@
 #include "rc.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h> //uint8_t
-#include <string.h> //strcmp
+
 
 uint8_t c, keyLength, k;
 
-char * keyFile = "key";
 char * plaintextFile = "plaintext";
 char * outputFile = "output";
 
 uint8_t S[RC_KEY_MAX_LENGTH];
 uint8_t key[RC_KEY_MAX_LENGTH];
 
-
-FILE *fpPlaintext;
-
+FILE *fp;
+FILE *ofp;
 
 void initS(void) {
 	int j,i;
@@ -33,14 +28,10 @@ void initS(void) {
 	}
 }
 
-int rc4() {
-	//TODO make command option to specify the key
-	
+int rc4(bool readKeyFromFile, char* keyNameOrValue) {
 
 	//read key
-	FILE *fp;
-	FILE *ofp;
-	fp = fopen(keyFile,"r");
+	fp = fopen(keyNameOrValue,"r");
 	if( fp == NULL )
 	{
 		perror("Error while opening key file.\n");
@@ -63,14 +54,14 @@ int rc4() {
 	int j, i;
 	initS();
 
-	fp = fopen("plaintext","r");
+	fp = fopen(plaintextFile,"r");
 	if( fp == NULL )
 	{
 		perror("Error while opening plaintext file.\n");
 		exit(EXIT_FAILURE);
 	}
 
-	ofp = fopen("output","w");
+	ofp = fopen(outputFile,"w");
 	if( ofp == NULL )
 	{
 		perror("Error while opening output file.\n");
@@ -89,9 +80,16 @@ int rc4() {
 		swap(uint8_t, S[i],S[j]);
 
 		k = S[(S[i] + S[j]) % 256];
+		
+		printf("Key :%d\n", k);
+		printf("Char: %d\n", c);
+		printf("New : %d\n", c^k);
+		
 		printf("%02X", c^k);
+		
+		printf("\n");
+
 		fputc(c^k, ofp);
-		//TODO print output to output file
 	}
 	printf("\n");
 
@@ -102,7 +100,3 @@ int rc4() {
 }
 
 
-int main(int argc, char const *argv[])
-{
-	return rc4();
-}
