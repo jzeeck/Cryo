@@ -5,6 +5,7 @@ static const char *NAME = "Cryo";
 static const char *VERSION = "1.0";
 
 char * keyFile = "key";
+char * outFile = "output";
 FILE* fpPlaintext;
 
 
@@ -38,6 +39,63 @@ int main(int argc, char const *argv[])
 				printf("%s-%s\n", NAME, VERSION);
 				exit(0);
 			}
+			//Key stuff
+			if (strcmp("-k", argv[i]) == 0)
+			{
+				//specify keyfile or value straight after
+				if (i + 1 >= argc)
+				{
+					printf("No keyfile was given.\n"); 
+					exit(-1);
+				}
+				++i;
+				size_t len1 = strlen(argv[i]);
+				keyFile = malloc(len1);//+1 for the zero-terminator
+				if(keyFile == NULL){  
+					printf("Out of memory\n");  
+					exit(-1);  
+				}
+				memcpy(keyFile, argv[i], len1);
+				continue;
+			}
+			if (strcmp("-kx", argv[i]) == 0)
+			{
+				//this is for the key specified as hex
+			}
+			if (strcmp("-I", argv[i]) == 0)
+			{
+				//Should make it not read from any key file but that what is specified after -k or -kx as key
+			}
+
+			//output
+			if (strcmp("-o", argv[i]) == 0)
+			{
+				if (i + 1 >= argc)
+				{
+					printf("No output file was given.\n"); 
+					exit(-1);
+				}
+				++i;
+				size_t len1 = strlen(argv[i]);
+				outFile = malloc(len1);//+1 for the zero-terminator
+				if(outFile == NULL){  
+					printf("Out of memory\n");  
+					exit(-1);  
+				}
+				memcpy(outFile, argv[i], len1);
+				continue;
+			}
+			if (strcmp("-O", argv[i]) == 0)
+			{
+				//Surpresses fileoutput only output will be in stdout as hex digits
+			}
+
+			//input
+			if (strcmp("-x", argv[i]) == 0)
+			{
+				//input is in hex
+			}
+
 			else{
 				printf("%s-%s: error: unrecognized command line option '%s'\n", NAME, VERSION, argv[i]);
 				exit(0);
@@ -55,8 +113,7 @@ int main(int argc, char const *argv[])
 	}
 
 
-
-	return rc4(true, keyFile);
+	return rc4(true, keyFile, true, outFile);
 }
 
 

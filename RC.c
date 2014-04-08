@@ -1,10 +1,8 @@
 #include "rc.h"
 
-
 uint8_t c, keyLength, k;
 
 char * plaintextFile = "plaintext";
-char * outputFile = "output";
 
 uint8_t S[RC_KEY_MAX_LENGTH];
 uint8_t key[RC_KEY_MAX_LENGTH];
@@ -28,46 +26,50 @@ void initS(void) {
 	}
 }
 
-int rc4(bool readKeyFromFile, char* keyNameOrValue) {
 
-	//read key
-	fp = fopen(keyNameOrValue,"r");
-	if( fp == NULL )
+void setupKey(const bool readFromFile, const char *nameOrValue) {
+
+	if (readFromFile)
 	{
-		perror("Error while opening key file.\n");
-		exit(EXIT_FAILURE);
-	}
-	for (int i = 0; i < RC_KEY_MAX_LENGTH; ++i)
-	{
-		c = fgetc(fp);
-		if(feof(fp) || i >= RC_KEY_MAX_LENGTH)
+		openFile(&fp, nameOrValue, "r");
+
+		for (int i = 0; i < RC_KEY_MAX_LENGTH; ++i)
 		{
-			break;
+			c = fgetc(fp);
+			if(feof(fp) || i >= RC_KEY_MAX_LENGTH)
+			{
+				break;
+			}
+			key[i] = c;
+			keyLength = i + 1;
 		}
-		key[i] = c;
-		keyLength = i + 1;
+		fclose(fp);
+		fp = NULL;
+	} else {
+		size_t len1 = strlen(nameOrValue);
+		if (len1 > RC_KEY_MAX_LENGTH)
+			len1 = RC_KEY_MAX_LENGTH;
+
+		keyLength = len1;
+
+		for (int i = 0; i < keyLength ; ++i)
+		{
+			key[i] = *(nameOrValue +i);
+		}
 	}
-	fclose(fp);
-	fp = NULL;
+}
 
+int rc4(const bool readKeyFromFile, const char* keyNameOrValue, const bool writeToFile, const char* opFile) {
 
-	int j, i;
+	//get key
+	setupKey(readKeyFromFile, keyNameOrValue);
+
 	initS();
 
-	fp = fopen(plaintextFile,"r");
-	if( fp == NULL )
-	{
-		perror("Error while opening plaintext file.\n");
-		exit(EXIT_FAILURE);
-	}
+	openFile(&fp, plaintextFile, "r");
+	openFile(&ofp, opFile, "w");
 
-	ofp = fopen(outputFile,"w");
-	if( ofp == NULL )
-	{
-		perror("Error while opening output file.\n");
-		exit(EXIT_FAILURE);
-	}
-
+	int i, j;
 	i = 0;j = 0;
 	while(1) {
 		c = fgetc(fp);//get next char
@@ -81,15 +83,8 @@ int rc4(bool readKeyFromFile, char* keyNameOrValue) {
 
 		k = S[(S[i] + S[j]) % 256];
 		
-		printf("Key :%d\n", k);
-		printf("Char: %d\n", c);
-		printf("New : %d\n", c^k);
-		
-		printf("%02X", c^k);
-		
-		printf("\n");
-
-		fputc(c^k, ofp);
+		printf("%02X", c^k);//this outputs the hex number
+		fputc(c^k, ofp);// writes to the file
 	}
 	printf("\n");
 
