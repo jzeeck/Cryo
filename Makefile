@@ -23,8 +23,8 @@ UTIL=util.c
 
 
 
-compile: cryo.o rc.o
-	$(CC) cryo.o rc.o util.o -o cryo
+compile: cryo.o rc.o keygen.o
+	$(CC) cryo.o rc.o util.o keygen.o lib/simplerandom.o -o cryo
 
 
 
@@ -33,6 +33,8 @@ all: $(MAIN) $(SYCRYPTO) $(EXECUTABLE)
 $(EXECUTABLE): 
 	$(CC) $(LFLAGS) $(MAIN) -o $@
 
+keygen.o: keygen.c
+	$(CC) $(CFLAGS) keygen.c
 
 util.o: util.c
 	$(CC) $(CFLAGS) util.c
@@ -48,3 +50,10 @@ run: compile
 
 clean:
 	rm cryo *.o
+
+keygen:
+	$(CC) $(CFLAGS) keygen.c
+
+
+generate:
+	./cryo -G

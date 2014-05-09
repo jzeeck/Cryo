@@ -1,9 +1,9 @@
-#include "rc.h"
 #include "cryo.h"
 
 static const char *NAME = "Cryo";
 static const char *VERSION = "1.0";
 
+static bool generateKey = false;
 char * keyFile = "key";
 char * outFile = "output";
 FILE* fpPlaintext;
@@ -20,6 +20,7 @@ int main(int argc, char const *argv[])
 		printf("%s-%s: fatal error: no input files\n", NAME, VERSION);
 		exit(0);
 	}
+
 	for (int i = 1; i < argc; ++i)
 	{
 		if (argv[i][0] == '-')
@@ -39,7 +40,12 @@ int main(int argc, char const *argv[])
 				printf("%s-%s\n", NAME, VERSION);
 				exit(0);
 			}
-			//Key stuff
+			//Generate key
+			if (strcmp("-G", argv[i]) == 0)
+			{
+				generateKey = true;
+				continue;
+			}
 			if (strcmp("-k", argv[i]) == 0)
 			{
 				//specify keyfile or value straight after
@@ -60,11 +66,7 @@ int main(int argc, char const *argv[])
 			}
 			if (strcmp("-kx", argv[i]) == 0)
 			{
-				//this is for the key specified as hex
-			}
-			if (strcmp("-I", argv[i]) == 0)
-			{
-				//Should make it not read from any key file but that what is specified after -k or -kx as key
+				//this is for the key specified as hex as next argument
 			}
 
 			//output
@@ -77,7 +79,7 @@ int main(int argc, char const *argv[])
 				}
 				++i;
 				size_t len1 = strlen(argv[i]);
-				outFile = malloc(len1);//+1 for the zero-terminator
+				outFile = malloc(len1);
 				if(outFile == NULL){  
 					printf("Out of memory\n");  
 					exit(-1);  
@@ -112,6 +114,10 @@ int main(int argc, char const *argv[])
 		}
 	}
 
+	if(generateKey)
+	{
+		return generate(256);//later specify number of bytes as parameter
+	} 
 
 	return rc4(true, keyFile, true, outFile);
 }
@@ -124,6 +130,6 @@ void printhelp(void) {
 	printf("Options:\n");
 	printf("  -h\t\t\tDisplay this information\n");
 	printf("  --help\t\tDisplay this information\n");
-	printf("  --version\t\tDisplay version informatio\n");
+	printf("  --version\t\tDisplay version information\n");
 	exit(0);
 }
